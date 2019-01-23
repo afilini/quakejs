@@ -81,6 +81,13 @@
 			return args;
 		}
 
+		// merge default args with query string args
+		var args = ['+set', 'fs_cdn', '<%= content %>'];
+		args.push.apply(args, getQueryCommands());
+		ioq3.onRuntimeInitialized = function() { ioq3.callMain(args); };
+		ioq3.viewport = document.getElementById('viewport-frame');
+		ioq3.elementPointerLock = true;
+
 		window.onload = function () {
 			function resizeViewport() {
 				if (!ioq3.canvas) {
@@ -96,15 +103,7 @@
 				ioq3.setCanvasSize(ioq3.viewport.offsetWidth, ioq3.viewport.offsetHeight);
 			}
 
-			ioq3.viewport = document.getElementById('viewport-frame');
-			ioq3.elementPointerLock = true;
 			window.addEventListener('resize', resizeViewport);
-
-			// merge default args with query string args
-			var args = ['+set', 'fs_cdn', '<%= content %>'];
-			args.push.apply(args, getQueryCommands());
-			ioq3.onRuntimeInitialized = function() { ioq3.callMain(args); };
-			
 		};
 	</script>
 	<script async type="text/javascript" src="/ioquake3.js"></script>

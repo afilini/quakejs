@@ -4,7 +4,7 @@ var crc32 = require('buffer-crc32');
 var express = require('express');
 var fs = require('fs');
 var http = require('http');
-var logger = require('winston');
+const { createLogger, format, transports } = require('winston');
 var opt = require('optimist');
 var path = require('path');
 var send = require('send');
@@ -20,7 +20,10 @@ if (argv.h || argv.help) {
 	return;
 }
 
-logger.cli();
+const logger = createLogger({
+	format: format.simple(),
+	transports: [new transports.Console()]
+  });
 logger.level = 'debug';
 
 var config = loadConfig(argv.config);

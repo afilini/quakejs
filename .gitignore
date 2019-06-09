@@ -2,3 +2,5 @@
 assets/
 assets_src/
 node_modules/
+*.swp
+base/

@@ -37,12 +37,15 @@ function loadConfig(configPath) {
 }
 
 (function main() {
+        express.static.mime.types['wasm'] = 'application/wasm';
 	var app = express();
 
 	app.set('views', __dirname);
 	app.set('view engine', 'ejs');
 
 	app.use(express.static(path.join(__dirname, '..', 'build')));
+	app.use(express.static(path.join(__dirname, '..', 'public')));
+
 	app.use(function (req, res, next) {
 		res.locals.content = config.content;
 		res.render('index');

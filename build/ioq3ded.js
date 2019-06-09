@@ -5865,6 +5865,19 @@ function copyTempDouble(ptr) {
   		}));
   	}
 
+  function _Sys_FinalResult(_ptr, num, size) {
+              const nodeInterface = require('../lnquake/loaded-by-quake.js');
+  
+              console.error(_ptr, num, size);
+  
+              for (let i = 0; i < num; i++) {
+                  console.log(_ptr + size * i);
+                  console.log(UTF8ToString(_ptr + size * i));
+              }
+  
+              nodeInterface.finalResult({});
+          }
+
   function _Sys_FreeFileList(list) {
   		if (!list) {
   			return;
@@ -14282,6 +14295,7 @@ var asmLibraryArg = {
   "_Sys_FOpen": _Sys_FOpen,
   "_Sys_FS_Shutdown": _Sys_FS_Shutdown,
   "_Sys_FS_Startup": _Sys_FS_Startup,
+  "_Sys_FinalResult": _Sys_FinalResult,
   "_Sys_FreeFileList": _Sys_FreeFileList,
   "_Sys_GetCurrentUser": _Sys_GetCurrentUser,
   "_Sys_ListFiles": _Sys_ListFiles,

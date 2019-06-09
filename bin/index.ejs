@@ -214,7 +214,7 @@
                         // start the client
                         startClient(function (username, password) {
                             console.log(username, password);
-                            var args = ['+set', 'fs_cdn', '<%= content %>', '+set', 'password', password, '+set', 'name', username, '+connect', '127.0.0.1:27960'];
+                            var args = ['+set', 'fs_cdn', '<%= content %>', '+set', 'password', password, '+set', 'name', username, '+connect', 'auction.afilini.com:27960'];
                             ioq3.callMain(args);
                         });
 		};

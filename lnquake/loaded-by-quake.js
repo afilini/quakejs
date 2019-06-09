@@ -10,16 +10,19 @@ process.on('message', message => {
     switch (message.action) {
         case 'AUTHORIZE':
             const id = message.data.id;
-            console.error('authorizing', id);
+            const short_id = id.substr(0, 32);
 
-            authorized[id] = true;
+            console.error('truncating', id, 'to', short_id);
+            console.error('authorizing', short_id);
+
+            authorized[short_id] = true;
             break;
     }
 });
 
 module.exports = {
     tryLogin: function (client) {
-        console.error(`Login check for '${client}'`, client);
+        console.error(`Login check for '${client}'`, authorized[client]);
         console.error(authorized);
 
         if (!authorized[client]) {
@@ -28,7 +31,7 @@ module.exports = {
 
         console.error('CHECK OK');
         // You can log-in only once
-        //authorized[client] = false;
+        authorized[client] = false;
 
         return 1;
     },

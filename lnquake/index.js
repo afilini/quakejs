@@ -17,11 +17,17 @@ const engine = new LNQuakeEngine(ioq3);
 server.on('getmanifest', msg => {
 	msg.reply({
 		options: [],
-		rpcmethods: [],
+		rpcmethods: [{
+                    name: 'debug_accept_all',
+                    usage: '',
+                    description: 'Accept all the pending payments, useful to cancel a game'
+                }],
 		subscriptions: [],
 		hooks: ["htlc_accepted"]
 	});
 }); 
+
+server.on('debug_accept_all', () => engine.debugAcceptAll());
 
 server.on('htlc_accepted', msg => {
 //        debug(msg);

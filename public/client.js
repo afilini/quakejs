@@ -1,3 +1,4 @@
+const WEBSOCKET_SERVER = "ws://auction.afilini.com:3000"
 
 // timer functions
 
@@ -52,7 +53,7 @@ function startClient(ioq3Callback) {
     let ws = new WSConnection(onConnected, onMessage);
 
     function WSConnection(connectedCallback, messageCallback) {
-        const ws = new WebSocket("ws://localhost:3000");
+        const ws = new WebSocket(WEBSOCKET_SERVER);
 
         let callbackRun = false;
 

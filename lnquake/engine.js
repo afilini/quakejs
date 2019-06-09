@@ -51,7 +51,10 @@ class LNQuakeEngine extends EventEmitter {
 
         // track the invoices during the handshake
         this.invoices = {};
+        this.invoicesRev = {};
         this.invoicesIndex = {};
+
+        this.ids = {};
 
         this.transitionTimeout = null;
     }
@@ -78,7 +81,10 @@ class LNQuakeEngine extends EventEmitter {
 
         this.players[id] = object;
         this.invoices[id] = {};
+        this.invoicesRev[id] = {};
         this.emit('NEW_PLAYER', {id, username: object.username, number: this.numPlayers()});
+
+        this.registerPlayerUsername(object.username, id);
 
         this.state.data.numPlayers++;
         debug('New player count: ' + this.state.data.numPlayers);
@@ -99,6 +105,7 @@ class LNQuakeEngine extends EventEmitter {
 
         delete this.players[id];
         delete this.invoices[id];
+        delete this.invoicesRev[id];
         this.emit('LOST_PLAYER', {id, number: this.numPlayers()});
 
         this.state.data.numPlayers--;
@@ -167,6 +174,7 @@ class LNQuakeEngine extends EventEmitter {
 
         for (const player in this.players) {
             this.invoices[player] = {};
+            this.invoicesRev[player] = {};
         }
         this.invoicesIndex = {};
         this.requiredPayments = this.numPlayers() * (this.numPlayers() - 1);
@@ -233,6 +241,7 @@ class LNQuakeEngine extends EventEmitter {
             if (player != from && !this.invoices[from][player]) {
                 debug(`Assigned invoice ${paymentHash} from ${from} to ${player}`);
                 this.invoices[from][player] = paymentHash;
+                this.invoicesRev[player][from] = paymentHash;
                 this.invoicesIndex[paymentHash] = {from, to: player};
 
                 return player;
@@ -280,14 +289,39 @@ class LNQuakeEngine extends EventEmitter {
         });
     }
 
+    registerPlayerUsername(username, id) {
+        // TODO: reset this when changing state
+        this.ids[username] = id;
+    }
+
     registerResult(result) {
         debug('registerResult', result);
+        debug(this.ids);
 
-        if (!this.state.state == 'PLAYING') {
-            return;
+        for (let i = 0; i < result.length; i++) {
+            const player = this.ids[result[i]];
+
+            debug('Working on', player);
+            debug(this.invoices[player]);
+
+            for (const other in this.invoices[player]) {
+                // Accept all we can, the others should have been removed
+                const paymentHash = this.invoices[player][other];
+                debug('Accepting invoice paid by', other, 'to', player);
+                this.emit('result-' + paymentHash, true); 
+
+                // Reject the others
+                const ourPaymentHash = this.invoicesRev[other][player];
+                debug('Rejecting invoice paid by', player, 'to', other);
+                this.emit('result-' + ourPaymentHash, false);
+            }
         }
+    }
 
-        // TODO!!
+    debugAcceptAll() {
+        for (const paymentHash in this.invoicesIndex) {
+            this.emit('result-' + paymentHash, true);
+        }
     }
 
     getState() {

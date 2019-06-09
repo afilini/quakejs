@@ -298,23 +298,31 @@ class LNQuakeEngine extends EventEmitter {
         debug('registerResult', result);
         debug(this.ids);
 
+        // TODO: what if they disconnected?
+        const allPlayers = this.getPlayers();
+
         for (let i = 0; i < result.length; i++) {
             const player = this.ids[result[i]];
 
             debug('Working on', player);
             debug(this.invoices[player]);
+            debug(allPlayers);
 
             for (const other in this.invoices[player]) {
-                // Accept all we can, the others should have been removed
-                const paymentHash = this.invoices[player][other];
-                debug('Accepting invoice paid by', other, 'to', player);
-                this.emit('result-' + paymentHash, true); 
+                if (other == player) {
+                    continue;
+                }
 
-                // Reject the others
-                const ourPaymentHash = this.invoicesRev[other][player];
-                debug('Rejecting invoice paid by', player, 'to', other);
-                this.emit('result-' + ourPaymentHash, false);
+                const hasToPay = allPlayers.indexOf(other) > -1;
+
+                debug('Result for invoice from', other, 'to', player, hasToPay);
+                const paymentHash = this.invoices[player][other];
+                this.emit('result-' + paymentHash, hasToPay); 
             }
+
+            // Remove us
+            const ourIndex = allPlayers.indexOf(player);
+            allPlayers.splice(ourIndex, 1);
         }
     }
 

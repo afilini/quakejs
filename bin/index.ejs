@@ -179,12 +179,14 @@
 		<div id="viewport-frame">
                     <div class="frame" id="username-frame">
                         <div>
-                            <h1>LN-Quake</h1>
+                            <h1 id="intro-title">LN-Quake</h1>
 
-                            <p>Please choose a username to enter this game. You have <span id="timeleft"></span>.</p>
+                            <p id="intro-text">Please choose a username to join the lobby</p>
 
-                            <input type="text" id="username"/>
-                            <button class="btn btn-success" id="username-continue">Continue</button>
+                            <div id="input-box">
+                                <input type="text" id="username"/>
+                                <button class="btn btn-success" id="username-continue">Continue</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,7 +216,7 @@
                         // start the client
                         startClient(function (username, password) {
                             console.log(username, password);
-                            var args = ['+set', 'fs_cdn', '<%= content %>', '+set', 'password', password, '+set', 'name', username, '+connect', 'auction.afilini.com:27960'];
+                            var args = ['+set', 'fs_cdn', '<%= content %>', '+set', 'password', password, '+set', 'name', username, '+connect', 'quake-server.afilini.com'];
                             ioq3.callMain(args);
                         });
 		};

@@ -1,4 +1,4 @@
-const WEBSOCKET_SERVER = "ws://auction.afilini.com:3000"
+const WEBSOCKET_SERVER = "wss://quake-controller.afilini.com"
 
 // timer functions
 
@@ -48,6 +48,9 @@ function startClient(ioq3Callback) {
         password: ''
     };
 
+    const introTitle = document.getElementById('intro-title');
+    const introText = document.getElementById('intro-text');
+
     // ----- BEGIN --------
 
     let ws = new WSConnection(onConnected, onMessage);
@@ -92,7 +95,8 @@ function startClient(ioq3Callback) {
             .requestProvider()
             .then(async function (provider) {
                 for (let i = 0; i < numPlayers - 1; i++) {
-                    const invoice = await provider.makeInvoice({amount: 1, defaultMemo: 'Test'});
+                    const randomNonce = Math.random().toString(36).substring(7);
+                    const invoice = await provider.makeInvoice({amount: 1, defaultMemo: 'LNQuake invoice #' + randomNonce + ' from `' + us.username + '`'});
                     console.log('Invoice generated...');
 
                     ws.send('INVOICE', { invoice: invoice.paymentRequest} );
@@ -122,9 +126,23 @@ function startClient(ioq3Callback) {
             case 'STATE_NOTIFICATION':
                 console.log('State notification', data.data.state);
 
-                if (data.data.state == 'HANDSHAKE') {
+                if (data.data.state == 'WAITING_FIRST_PLAYERS' && us.username != '') {
+                    introText.innerHTML = 'Waiting for at least one more player to enter the lobby...';
+                    // TODO: show who is online
+                } else if (data.data.state == 'WAITING') {
+                    introText.innerHTML = 'At least two players are in the lobby, starting the countdown';
+                    // TODO: show the countdown
+                } else if (data.data.state == 'HANDSHAKE') {
+                    introText.innerHTML = 'Handshake phase! Accept all the prompts from Joule to create and pay the invoices';
+                    // TODO: show progress?
+
                     doHandshake(data.data.data.numPlayers);
                 } else if (data.data.state == 'PLAYING') {
+                    introText.innerHTML = 'Handshake done, we are locked in! The game will load shortly';
+                    setTimeout(() => {
+                        document.getElementById('username-frame').style.display = 'none';
+                    }, 2000);
+
                     ioq3Callback(us.username, us.password);
                 }
 
@@ -143,11 +161,13 @@ function startClient(ioq3Callback) {
         var frame = document.getElementById('username-frame');
 
         frame.style.display = 'inherit';
-
-        document.getElementById('username-continue').onclick = function () {
+        
+        var usernameContinue = document.getElementById('username-continue');
+        usernameContinue.onclick = function () {
             var val = document.getElementById('username').value;
-            console.log(val);
-            frame.style.display = 'none';
+            document.getElementById('input-box').style.display = 'none';
+            
+            introText.innerHTML = 'Waiting for at least one more player to enter the lobby...';
 
             us.username = val;
 

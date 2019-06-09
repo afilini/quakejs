@@ -304,7 +304,7 @@ var asm2wasmImports = { // special asm2wasm imports
 
 
 var jsCallStartIndex = 1;
-var functionPointers = new Array(10);
+var functionPointers = new Array(1);
 
 // Wraps a JS function as a wasm function with a given signature.
 // In the future, we may get a WebAssembly.Function constructor. Until then,
@@ -413,7 +413,7 @@ function addFunction(func, sig) {
 
 
   var base = 0;
-  for (var i = base; i < base + 10; i++) {
+  for (var i = base; i < base + 1; i++) {
     if (!functionPointers[i]) {
       functionPointers[i] = func;
       return jsCallStartIndex + i;
@@ -1565,8 +1565,8 @@ Module['asm'] = function(global, env, providedBuffer) {
   ;
   // import table
   env['table'] = wasmTable = new WebAssembly.Table({
-    'initial': 992,
-    'maximum': 992,
+    'initial': 534,
+    'maximum': 534,
     'element': 'anyfunc'
   });
   // With the wasm backend __memory_base and __table_base and only needed for
@@ -5427,7 +5427,7 @@ function copyTempDouble(ptr) {
   		},DownloadAsset:function (asset, onprogress, onload) {
   			var root = SYSC.GetCDN();
   			var name = asset.name.replace(/(.+\/|)(.+?)$/, '$1' + asset.checksum + '-$2');
-  			var url = 'http://' + root + '/assets/' + name;
+  			var url = 'https://' + root + '/assets/' + name;
   
   			SYS.DoXHR(url, {
   				dataType: 'arraybuffer',
@@ -5864,19 +5864,6 @@ function copyTempDouble(ptr) {
   			SYSC.ProxyCallback(context);
   		}));
   	}
-
-  function _Sys_FinalResult(_ptr, num, size) {
-              const nodeInterface = require('../lnquake/loaded-by-quake.js');
-  
-              console.error(_ptr, num, size);
-  
-              for (let i = 0; i < num; i++) {
-                  console.log(_ptr + size * i);
-                  console.log(UTF8ToString(_ptr + size * i));
-              }
-  
-              nodeInterface.finalResult({});
-          }
 
   function _Sys_FreeFileList(list) {
   		if (!list) {
@@ -14295,7 +14282,6 @@ var asmLibraryArg = {
   "_Sys_FOpen": _Sys_FOpen,
   "_Sys_FS_Shutdown": _Sys_FS_Shutdown,
   "_Sys_FS_Startup": _Sys_FS_Startup,
-  "_Sys_FinalResult": _Sys_FinalResult,
   "_Sys_FreeFileList": _Sys_FreeFileList,
   "_Sys_GetCurrentUser": _Sys_GetCurrentUser,
   "_Sys_ListFiles": _Sys_ListFiles,

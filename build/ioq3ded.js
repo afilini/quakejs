@@ -304,7 +304,7 @@ var asm2wasmImports = { // special asm2wasm imports
 
 
 var jsCallStartIndex = 1;
-var functionPointers = new Array(1);
+var functionPointers = new Array(10);
 
 // Wraps a JS function as a wasm function with a given signature.
 // In the future, we may get a WebAssembly.Function constructor. Until then,
@@ -413,7 +413,7 @@ function addFunction(func, sig) {
 
 
   var base = 0;
-  for (var i = base; i < base + 1; i++) {
+  for (var i = base; i < base + 10; i++) {
     if (!functionPointers[i]) {
       functionPointers[i] = func;
       return jsCallStartIndex + i;
@@ -1565,8 +1565,8 @@ Module['asm'] = function(global, env, providedBuffer) {
   ;
   // import table
   env['table'] = wasmTable = new WebAssembly.Table({
-    'initial': 534,
-    'maximum': 534,
+    'initial': 992,
+    'maximum': 992,
     'element': 'anyfunc'
   });
   // With the wasm backend __memory_base and __table_base and only needed for

@@ -1,4 +1,43 @@
-# QuakeJS
+# LN Quake
+
+LN Quake is a game based on QuakeJS, a port of ioquake to JS. LN Quake adds Lightning Network into the mix, by allowing players to battle with each other to win Satoshis. 
+
+### [Demo on YouTube, some explanation is provided in the subtitles](http://www.youtube.com/watch?v=yNmgKCNmmo8&cc_load_policy=1)
+
+The idea of games where people can win Satoshis is not new, but what makes this project unique is the fact that none of the players have to deposit/withdraw money to/from a third party service: all the payments are made **directly** between the players, while the server sits in between to choose which payments can go through and which cannot (while also, potentially, taking a fee for this service).
+
+The concept is very similar to a "2-of-3" escrow multisig, but since all of that happens on the Lightning Network, players can bet even very small amounts and the fact that the number of payments grows quadratically with the number of players becomes almost irrelevant (though, there could be ways to reduce the number of payments required by slightly changing the outcome, thanks to [@imaprincess](http://github.com/imaprincess) for the neat suggestions!). Moreover, players can participate with their own "normal" wallets, and there's no need to construct convuluted scripts and transactions, since Lightning handles all of that for you.
+
+## Project Structure
+
+To speed up the development during the hackathon, the "C" part (the original ioq3 code) has almost been left untouched: this increased the complexity of the whole project a little bit, because instead of having one nice daemon running, there are now two daemons, where one is a "wrapper" over the other, and it is responsible to start and manage it.
+
+So, the final structure is made by:
+
+* a `content` server, which acts as a "filesystem" for IOQ3 to download his files
+* a `web` server which servers the index web page
+* a `controller` made as c-lightning plugin (it is started by Lightningd)
+  * the original `ioq3ded` which is started by the controller
+
+This project is also loosely derived from [ln-auctions](https://github.com/afilini/ln-auctions), mostly for some low-level c-lightning plugin utils.
+
+## How to run
+
+You should follow the instructions down below for a first run/setup (to accept the EULA, etc), and then you should be able to use `lnquake/index.js` as a c-lightning plugin to start the whole system.
+
+Don't forget the two `npm install`s, one in the root and one in `lnquake/`.
+
+The code is setup to work on HTTPS, which means that you should replace the "official" content server with a proxy (you could setup your own or use mine at `https://quake-content.afilini.com`).
+
+## How to build
+
+Well, that's a very good question. The "original" QuakeJS is pretty old and refuses to build with modern versions of Emscripten. There's a fork (the one on which I based my code) which was supposed to work with modern compilers, but I dind't have any luck with it: in particular, every time I tried to rebuild the client (`ioquake3.js`) it would always crash with some GLSL exceptions, even if all the shaders were untouched! I ended up reusing the client from the GitHub repo (which also forced me to "wrap" some extra code around it, instead of just patching it).
+
+The server (`ioq3ded.{js,wasm}`) should compile with a modern toolchain (I personally used `emcc 1.38.34`), but if you just want to play I strongly suggest to use the prebuilt files in `build/`. They should "Just Work" (TM).
+
+-------------
+
+# Original README, useful to get started
 
 QuakeJS is a port of [ioquake3](http://www.ioquake3.org) to JavaScript with the help of [Emscripten](http://github.com/kripken/emscripten).
 
